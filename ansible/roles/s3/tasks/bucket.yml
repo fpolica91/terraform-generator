@@ -1,0 +1,5 @@
+---
+- name: Create S3 Buckets
+  ansible.builtin.template:
+    src: "{{ playbook_dir }}/../../templates/aws/buckets/main.tf.j2"
+    dest: "{{terraform_dir}}//main.tf"

@@ -1,0 +1,13 @@
+---
+- name: Create Variables
+  variables_config_module:
+    buckets: "{{ buckets }}"
+    template_path: "{{ playbook_dir }}/../../templates/aws/buckets/variables.tf.j2"
+  register: variables_config
+
+- name: Write Rendered Configuration to File
+  ansible.builtin.copy:
+    content: "{{ variables_config.terraform_config}}"
+    dest: "{{ terraform_dir }}/variables.tf"
+  tags:
+    - terraform

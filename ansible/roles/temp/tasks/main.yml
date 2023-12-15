@@ -1,0 +1,16 @@
+---
+- name: Create Temporary Directory
+  ansible.builtin.file:
+    path: "{{playbook_dir}}/tmp-{{lookup('pipe', 'date +%Y%m%d%H%M%S')}}"
+    state: directory
+    mode: "0755"
+    recurse: true
+  tags:
+    - terraform
+  register: terraform_dir
+
+- name: Set Global Fact for Terraform Directory
+  set_fact:
+    terraform_dir: "{{ terraform_dir.path }}"
+  tags:
+    - terraform

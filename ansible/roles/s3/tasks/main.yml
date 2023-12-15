@@ -1,0 +1,5 @@
+- name: Include variable and bucket tasks
+  include_tasks: variables.yml
+
+- name: Include bucket tasks
+  include_tasks: bucket.yml

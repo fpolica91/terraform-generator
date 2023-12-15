@@ -1,0 +1,63 @@
+
+{%for bucket in buckets%}
+
+resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
+  bucket = "{{bucket.name}}"
+   {%if bucket.tags | length > 0%}
+    tags = {
+      {%for tag in bucket.tags%}
+      "{{tag.key}}" = "{{tag.value}}"
+      {%endfor%}
+    }
+   {%endif%}
+}
+
+resource "aws_s3_bucket_ownership_controls" "ownership_controls" {
+  bucket = aws_s3_bucket.bucket_{{ loop.index }}.bucket
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+{# resource "aws_s3_bucket_acl" "acl_bucket" {
+ 
+  depends_on = [aws_s3_bucket_ownership_controls.ownership_controls, aws_s3_bucket_public_access_block.public_access_block]
+
+  bucket = aws_s3_bucket.bucket[each.key].id
+  acl    = each.value.acl
+}
+
+resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  for_each = { for b in var.buckets : b.name => b }
+
+  bucket                  = aws_s3_bucket.bucket[each.key].id
+  block_public_acls       = each.value.block_public_acls
+  block_public_policy     = each.value.block_public_policy
+  ignore_public_acls      = each.value.ignore_public_acls
+  restrict_public_buckets = each.value.restrict_public_buckets
+}
+
+resource "aws_s3_bucket_website_configuration" "website_config" {
+  for_each = { for b in var.buckets : b.name => b if b.host_website }
+
+  bucket = aws_s3_bucket.bucket[each.key].id
+  index_document {
+    suffix = each.value.index_document
+  }
+  error_document {
+    key = each.value.error_document
+  }
+}
+
+
+output "bucket_names" {
+  description = "Names of the created S3 buckets"
+  value       = [for b in aws_s3_bucket.bucket : b.bucket]
+}
+
+output "bucket_arns" {
+  description = "ARNs of the created S3 buckets"
+  value       = [for b in aws_s3_bucket.bucket : b.arn]
+} #}
+
+{%endfor%}

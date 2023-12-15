@@ -1,0 +1,51 @@
+
+
+
+
+{%if buckets | length > 0%}
+
+variable "buckets" {
+  description = "List of buckets to create"
+  type = list(object({
+    name = string
+    acl = string
+    block_public_acls = bool
+    block_public_policy = bool
+    ignore_public_acls = bool
+    restrict_public_buckets = bool
+    host_website = bool
+    index_document = string
+    error_document = string
+    tags = list(object({
+      key = string
+      value = string
+    }))
+  }))
+  default = [
+    {%for bucket in buckets%}
+    {
+      name = "{{bucket.name}}"
+      acl = "{{bucket.acl}}"
+      block_public_acls = {{bucket.block_public_acls}}
+      block_public_policy = {{bucket.block_public_policy}}
+      ignore_public_acls = {{bucket.ignore_public_acls}}
+      restrict_public_buckets = {{bucket.restrict_public_buckets}}
+      host_website = {{bucket.host_website}}
+      index_document = "{{bucket.index_document}}"
+      error_document = "{{bucket.error_document}}"
+      tags = [
+        {%for tag in bucket.tags%}
+        {
+          key = "{{tag.key}}"
+          value = "{{tag.value}}"
+        },
+        {%endfor%}
+      ]
+    },
+    {%endfor%}
+  ]
+}
+
+{%endif%}
+
+

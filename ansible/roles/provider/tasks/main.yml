@@ -1,0 +1,18 @@
+# - name: Render Terrfaorm files
+#   template:
+#     src: "{{ item }}"
+#     dest: "{{ terraform_dir }}/{{ item }}"
+#   with_items:
+#     - main.tf
+#     - variables.tf
+#     - outputs.tf
+#     - terraform.tfvars
+#   tags:
+#     - terraform
+
+- name: Render Terraform Provider Configuration
+  ansible.builtin.template:
+    src: "{{ playbook_dir }}/../../templates/aws/provider.tf.j2"
+    dest: "{{terraform_dir}}//provider.tf"
+
+

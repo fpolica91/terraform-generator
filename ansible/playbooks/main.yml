@@ -1,0 +1,16 @@
+# playbook.yml
+---
+- hosts: localhost
+  vars:
+    VULTR_ACCESS_KEY: "some shit goes here"
+    VULTR_SECRET_KEY: "kdgjkgdslajglda"
+    USER_SPECIFIC_BUCKET_NAME: "kjdflsdgklasga"
+    ENDPOINT: "ndlkgngalksdngla"
+    access_key: "gdklsajgkldajga"
+    secret_key: "dnlkjgajlkdgja"
+    generate_s3: true
+    buckets: "{{buckets}}"
+  roles:
+    - temp
+    - provider
+    - s3
