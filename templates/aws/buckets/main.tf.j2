@@ -12,52 +12,62 @@ resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
    {%endif%}
 }
 
-resource "aws_s3_bucket_ownership_controls" "ownership_controls" {
+resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
   bucket = aws_s3_bucket.bucket_{{ loop.index }}.bucket
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
-{# resource "aws_s3_bucket_acl" "acl_bucket" {
+resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
  
-  depends_on = [aws_s3_bucket_ownership_controls.ownership_controls, aws_s3_bucket_public_access_block.public_access_block]
+  depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ loop.index }}, aws_s3_bucket_public_access_block.public_access_block_{{ loop.index }}]
 
-  bucket = aws_s3_bucket.bucket[each.key].id
-  acl    = each.value.acl
+  bucket = aws_s3_bucket.bucket_{{ loop.index}}.bucket
+  acl    = "{{bucket.acl}}"
 }
 
-resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  for_each = { for b in var.buckets : b.name => b }
-
-  bucket                  = aws_s3_bucket.bucket[each.key].id
-  block_public_acls       = each.value.block_public_acls
-  block_public_policy     = each.value.block_public_policy
-  ignore_public_acls      = each.value.ignore_public_acls
-  restrict_public_buckets = each.value.restrict_public_buckets
+resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index }}" {
+  bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.bucket
+  block_public_acls       = "{{bucket.block_public_acls}}"
+  block_public_policy     = "{{bucket.block_public_policy}}"
+  ignore_public_acls      = "{{bucket.ignore_public_acls}}"
+  restrict_public_buckets = "{{bucket.restrict_public_buckets}}"
 }
 
-resource "aws_s3_bucket_website_configuration" "website_config" {
-  for_each = { for b in var.buckets : b.name => b if b.host_website }
 
-  bucket = aws_s3_bucket.bucket[each.key].id
+{%if bucket.host_website == true%}
+resource "aws_s3_bucket_website_configuration" "website_config_{{ loop.index }}" {
+  bucket = aws_s3_bucket.bucket_{{ loop.index }}.bucket
   index_document {
-    suffix = each.value.index_document
+    {%if bucket.index_document %}
+      suffix = "{{bucket.index_document}}"
+      {%else%}
+      suffix = "index.html"
+    {%endif%}
   }
-  error_document {
-    key = each.value.error_document
-  }
+  
+    error_document {
+       {%if bucket.error_document %}
+          key = "{{bucket.error_document}}"
+        {%else%}
+          key = "error.html"
+        {%endif%}
+    }
 }
+{%endif%}
 
 
-output "bucket_names" {
+
+
+output "bucket_names_{{ loop.index }}" {
   description = "Names of the created S3 buckets"
-  value       = [for b in aws_s3_bucket.bucket : b.bucket]
+  value       = bucket_{{ loop.index }}.bucket
 }
 
-output "bucket_arns" {
+output "bucket_names_{{ loop.index }}" {
   description = "ARNs of the created S3 buckets"
-  value       = [for b in aws_s3_bucket.bucket : b.arn]
-} #}
+  value       = bucket_{{ loop.index }}.arn
+}
 
 {%endfor%}

@@ -10,7 +10,12 @@
     secret_key: "dnlkjgajlkdgja"
     generate_s3: true
     buckets: "{{buckets}}"
-  roles:
-    - temp
-    - provider
-    - s3
+    dynamic_roles:
+      - temp
+      - provider
+      - s3
+  tasks:
+    - name: Include dynamic roles
+      ansible.builtin.include_role:
+        name: "{{item}}"
+      loop: "{{dynamic_roles}}"
