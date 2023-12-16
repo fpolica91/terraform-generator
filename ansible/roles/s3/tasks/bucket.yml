@@ -1,7 +1,7 @@
 ---
 - name: Create S3 Buckets
   ansible.builtin.template:
-    src: "{{ playbook_dir }}/../../templates/aws/buckets/main.tf.j2"
+    src: "{{template_dir}}/aws/buckets/main.tf.j2"
     dest: "/tmp/main.tf"
   register: template
 

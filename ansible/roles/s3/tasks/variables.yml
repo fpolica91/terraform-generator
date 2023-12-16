@@ -2,7 +2,7 @@
 - name: Create Variables
   variables_config_module:
     buckets: "{{ buckets }}"
-    template_path: "{{ playbook_dir }}/../../templates/aws/buckets/variables.tf.j2"
+    template_path: "{{template_dir}}/aws/buckets/variables.tf.j2"
   register: variables_config
 
 - name: Write Rendered Configuration to File

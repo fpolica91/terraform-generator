@@ -1,7 +1,7 @@
 ---
 - name: "S3 | Output"
   ansible.builtin.template:
-    src: "{{ playbook_dir }}/../../templates/aws/buckets/output.tf.j2"
+    src: "{{template_dir}}/aws/buckets/output.tf.j2"
     dest: "/tmp/output.tf"
   register: output
 

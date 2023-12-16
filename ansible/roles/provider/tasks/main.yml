@@ -12,7 +12,7 @@
 
 - name: Render Terraform Provider Configuration
   ansible.builtin.template:
-    src: "{{ playbook_dir }}/../../templates/aws/provider.tf.j2"
+    src: "{{template_dir}}/aws/provider.tf.j2"
     dest: "/tmp/provider.tf"
   register: provider_config
 

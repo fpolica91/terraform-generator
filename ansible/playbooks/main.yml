@@ -21,6 +21,10 @@
       set_fact:
         terraform_dir: "{{ playbook_dir }}/../../terraform/"
 
+    - name: Set Template Directory
+      set_fact:
+        template_dir: "{{ playbook_dir }}/../../templates"
+
     - name: Include dynamic roles
       ansible.builtin.include_role:
         name: "{{item}}"
