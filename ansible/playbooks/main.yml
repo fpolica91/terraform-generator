@@ -2,19 +2,25 @@
 ---
 - hosts: localhost
   vars:
-    VULTR_ACCESS_KEY: ""
-    VULTR_SECRET_KEY: ""
+    VULTR_ACCESS_KEY: "{{VULTR_ACCESS_KEY}}"
+    VULTR_SECRET_KEY: "{{VULTR_SECRET_KEY}}"
     USER_SPECIFIC_BUCKET_NAME: "tito"
     ENDPOINT: "ewr1.vultrobjects.com"
-    access_key: "AKIAVRRPZVJKWI47XO4E"
-    secret_key: "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"
+    access_key: "{{access_key}}"
+    secret_key: "{{secret_key}}"
     generate_s3: true
     buckets: "{{buckets}}"
-    dynamic_roles:
-      - temp
-      - provider
-      - s3
+    dynamic_roles: "{{dynamic_roles}}}"
+
   tasks:
+    - name: Set up dynamic roles
+      set_fact:
+        dynamic_roles: "{{dynamic_roles|default([]) + [item]}}"
+      loop: "{{dynamic_roles}}"
+    - name: Set Terraform Directory
+      set_fact:
+        terraform_dir: "{{ playbook_dir }}/../../terraform/"
+
     - name: Include dynamic roles
       ansible.builtin.include_role:
         name: "{{item}}"

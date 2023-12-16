@@ -1,0 +1,5 @@
+.env
+terraform/*.tfstate
+terraform/*tf
+terraform/.terraform
+main.sh
