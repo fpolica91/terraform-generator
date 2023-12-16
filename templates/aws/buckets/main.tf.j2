@@ -29,10 +29,10 @@ resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
 
 resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index }}" {
   bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.bucket
-  block_public_acls       = "{{bucket.block_public_acls}}"
-  block_public_policy     = "{{bucket.block_public_policy}}"
-  ignore_public_acls      = "{{bucket.ignore_public_acls}}"
-  restrict_public_buckets = "{{bucket.restrict_public_buckets}}"
+  block_public_acls       = {{bucket.block_public_acls | lower}}
+  block_public_policy     = {{bucket.block_public_policy | lower }}
+  ignore_public_acls      = {{bucket.ignore_public_acls | lower}}
+  restrict_public_buckets = {{bucket.restrict_public_buckets | lower}}
 }
 
 
@@ -56,18 +56,5 @@ resource "aws_s3_bucket_website_configuration" "website_config_{{ loop.index }}"
     }
 }
 {%endif%}
-
-
-
-
-output "bucket_names_{{ loop.index }}" {
-  description = "Names of the created S3 buckets"
-  value       = bucket_{{ loop.index }}.bucket
-}
-
-output "bucket_names_{{ loop.index }}" {
-  description = "ARNs of the created S3 buckets"
-  value       = bucket_{{ loop.index }}.arn
-}
 
 {%endfor%}

@@ -2,4 +2,10 @@
 - name: Create S3 Buckets
   ansible.builtin.template:
     src: "{{ playbook_dir }}/../../templates/aws/buckets/main.tf.j2"
-    dest: "{{terraform_dir}}//main.tf"
+    dest: "/tmp/main.tf"
+  register: template
+
+- name: Create S3 Buckets
+  ansible.builtin.copy:
+    content: "{{ lookup('file', '/tmp/main.tf') }}"
+    dest: "{{terraform_dir}}/main.tf"

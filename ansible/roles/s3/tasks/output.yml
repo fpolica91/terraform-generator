@@ -1,0 +1,11 @@
+---
+- name: "S3 | Output"
+  ansible.builtin.template:
+    src: "{{ playbook_dir }}/../../templates/aws/buckets/output.tf.j2"
+    dest: "/tmp/output.tf"
+  register: output
+
+- name: "S3 | Output | Write"
+  ansible.builtin.copy:
+    content: "{{lookup('file', '/tmp/output.tf')}}"
+    dest: "{{terraform_dir}}/output.tf"

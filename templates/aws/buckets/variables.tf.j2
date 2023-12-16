@@ -26,11 +26,11 @@ variable "buckets" {
     {
       name = "{{bucket.name}}"
       acl = "{{bucket.acl}}"
-      block_public_acls = {{bucket.block_public_acls}}
-      block_public_policy = {{bucket.block_public_policy}}
-      ignore_public_acls = {{bucket.ignore_public_acls}}
-      restrict_public_buckets = {{bucket.restrict_public_buckets}}
-      host_website = {{bucket.host_website}}
+      block_public_acls = {{bucket.block_public_acls | lower}}
+      block_public_policy = {{bucket.block_public_policy | lower}}
+      ignore_public_acls = {{bucket.ignore_public_acls | lower}}
+      restrict_public_buckets = {{bucket.restrict_public_buckets | lower}}
+      host_website = {{bucket.host_website | lower}}
       index_document = "{{bucket.index_document}}"
       error_document = "{{bucket.error_document}}"
       tags = [

@@ -13,6 +13,15 @@
 - name: Render Terraform Provider Configuration
   ansible.builtin.template:
     src: "{{ playbook_dir }}/../../templates/aws/provider.tf.j2"
-    dest: "{{terraform_dir}}//provider.tf"
+    dest: "/tmp/provider.tf"
+  register: provider_config
 
+- name: Append Terraform Provider Configuration
+  ansible.builtin.copy:
+    content: "{{ lookup('file', '/tmp/provider.tf') }}"
+    dest: "{{ terraform_dir }}/provider.tf"
 
+- name: Delete Terraform Provider Configuration
+  ansible.builtin.file:
+    path: "/tmp/provider.tf"
+    state: absent

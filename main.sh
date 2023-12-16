@@ -3,7 +3,7 @@ export PYTHONPATH="${PYTHONPATH}:/Users/germanpolicarpo/Library/Python/3.9/lib/p
 
 ansible-playbook ./ansible/playbooks/main.yml -e '{"buckets": [
   {
-    "name": "my-bucket-1",
+    "name": "dggasgsagagadgfsarwexdgsadfgagagagadsfdssfasgasg",
     "acl": "private",
     "block_public_acls": true,
     "block_public_policy": true,
@@ -18,7 +18,7 @@ ansible-playbook ./ansible/playbooks/main.yml -e '{"buckets": [
     ]
   },
   {
-    "name": "my-bucket-2",
+    "name": "dggasgsagagadgfsarwexdgsadfgagagagadsf",
     "acl": "public-read",
     "block_public_acls": false,
     "block_public_policy": false,

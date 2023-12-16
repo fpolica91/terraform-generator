@@ -3,3 +3,6 @@
 
 - name: Include bucket tasks
   include_tasks: bucket.yml
+
+- name: Include bucket tasks
+  include_tasks: output.yml

@@ -7,7 +7,7 @@ terraform {
       secret_key                  = "{{VULTR_SECRET_KEY}}"
       bucket                      = "{{USER_SPECIFIC_BUCKET_NAME}}"
       key                         = "terraform.tfstate"
-      endpoint                    = {{ENDPOINT}}
+      endpoint                    = "{{ENDPOINT}}"
       region                      = "us-east-1"
       skip_credentials_validation = true
       skip_metadata_api_check     = true

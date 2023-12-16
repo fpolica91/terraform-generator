@@ -2,12 +2,12 @@
 ---
 - hosts: localhost
   vars:
-    VULTR_ACCESS_KEY: "some shit goes here"
-    VULTR_SECRET_KEY: "kdgjkgdslajglda"
-    USER_SPECIFIC_BUCKET_NAME: "kjdflsdgklasga"
-    ENDPOINT: "ndlkgngalksdngla"
-    access_key: "gdklsajgkldajga"
-    secret_key: "dnlkjgajlkdgja"
+    VULTR_ACCESS_KEY: ""
+    VULTR_SECRET_KEY: ""
+    USER_SPECIFIC_BUCKET_NAME: "tito"
+    ENDPOINT: "ewr1.vultrobjects.com"
+    access_key: "AKIAVRRPZVJKWI47XO4E"
+    secret_key: "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"
     generate_s3: true
     buckets: "{{buckets}}"
     dynamic_roles:
