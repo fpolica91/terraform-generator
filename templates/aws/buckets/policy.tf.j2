@@ -1,0 +1,46 @@
+{%for bucket in buckets%}
+  {%if bucket.policy_enabled == true %}
+
+  {%if bucket.policy_json%}
+  resource "aws_s3_bucket_policy" "{{bucket.name}}-policy" {
+    bucket = "aws_s3_bucket.bucket_{{ loop.index }}.bucket"
+    policy = jsonencode(
+      {{bucket.policy_json | tojson}}
+    )
+   
+    
+      
+  }
+
+  {%else%}
+  resource "aws_s3_bucket_policy" "{{bucket.name}}-policy" {
+    bucket = "aws_s3_bucket.bucket_{{ loop.index }}.bucket
+    policy = jsonencode({
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "PublicReadGetObject",
+          "Effect": "Allow",
+          "Principal": "*",
+          {% if bucket.actions | length %}
+            "Action": [
+            join("," "{{bucket.actions}}")
+            ],
+          {% endif %}
+          
+          {% if bucket.resources | length %}
+          "Resource": [
+              join("," "{{bucket.resources}}")
+          ]
+          {%else%}
+          "Resource": [
+               "arn:aws:s3:::aws_s3_bucket.bucket_{{ loop.index }}.arn/*"
+            ]
+           {% endif %}
+        }
+      ]
+    })
+  }
+  {%endif%}
+  {%endif%}
+{%endfor%}

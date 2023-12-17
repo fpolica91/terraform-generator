@@ -1,0 +1,11 @@
+---
+- name: "Create Policy"
+  ansible.builtin.template:
+    src: "{{template_dir}}/aws/buckets/policy.tf.j2"
+    dest: "/tmp/policy.tf"
+  register: output
+
+- name: "Write Policy"
+  ansible.builtin.copy:
+    content: "{{lookup('file', '/tmp/policy.tf')}}"
+    dest: "{{terraform_dir}}/policy.tf"

@@ -1,16 +1,76 @@
-
 {%for bucket in buckets%}
 
 resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
   bucket = "{{bucket.name}}"
    {%if bucket.tags | length > 0%}
-    tags = {
+    tags=merge(
+       {},
       {%for tag in bucket.tags%}
-      "{{tag.key}}" = "{{tag.value}}"
+        {
+          {{tag.key}} = "{{tag.value}}"
+        } {%if not loop.last%},{%endif%}
       {%endfor%}
-    }
+    )
    {%endif%}
+
+    {%if bucket.object_lock_enabled is defined%}
+      object_lock_enabled = {{bucket.object_lock_enabled | lower}}
+    {%endif%}
+
+
+  
+    
+{# 
+    {%if bucket.lifecycle%}
+      lifecycle_rule {
+        id      = "{{bucket.lifecycle.id}}"
+        enabled = {{bucket.lifecycle.enabled | lower}}
+        {%if bucket.lifecycle.prefix%}
+          prefix = "{{bucket.lifecycle.prefix}}"
+        {%endif%}
+        {%if bucket.lifecycle.transition%}
+          transition {
+            days          = {{bucket.lifecycle.transition.days}}
+            storage_class = "{{bucket.lifecycle.transition.storage_class}}"
+          }
+        {%endif%}
+        {%if bucket.lifecycle.expiration%}
+          expiration {
+            days = {{bucket.lifecycle.expiration.days}}
+          }
+        {%endif%}
+      }
+    {%endif%} #}
+
+    {# {%if bucket.cors%}
+      cors_rule {
+        allowed_headers = [
+          {%for header in bucket.cors.allowed_headers%}
+            "{{header}}"{%if not loop.last%},{%endif%}
+          {%endfor%}
+        ]
+        allowed_methods = [
+          {%for method in bucket.cors.allowed_methods%}
+            "{{method}}"{%if not loop.last%},{%endif%}
+          {%endfor%}
+        ]
+        allowed_origins = [
+          {%for origin in bucket.cors.allowed_origins%}
+            "{{origin}}
+    {%end%}
+
+   {%if bucket.acceleration_status%} 
+      acceleration_status = "{{bucket.acceleration_status}}"
+   {%endif%}
+
+   {%if bucket.force_destroy%}
+      force_destroy = {{bucket.force_destroy | lower}}
+   {%endif%} #}
+
+
 }
+
+
 
 resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
   bucket = aws_s3_bucket.bucket_{{ loop.index }}.bucket

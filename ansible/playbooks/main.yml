@@ -13,13 +13,13 @@
     dynamic_roles: "{{dynamic_roles}}}"
 
   tasks:
+    - name: Set environment variables as facts
+      set_fact:
+        buckets: "{{buckets|default([])}}"
     - name: Set up dynamic roles
       set_fact:
         dynamic_roles: "{{dynamic_roles|default([]) + [item]}}"
       loop: "{{dynamic_roles}}"
-    - name: Set Terraform Directory
-      set_fact:
-        terraform_dir: "{{ playbook_dir }}/../../terraform/"
 
     - name: Set Template Directory
       set_fact:

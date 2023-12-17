@@ -6,3 +6,6 @@
 
 - name: Include bucket tasks
   include_tasks: output.yml
+
+- name: Include policy tasks
+  include_tasks: policy.yml
