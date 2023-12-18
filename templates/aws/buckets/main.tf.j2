@@ -21,7 +21,7 @@ resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
   
   
 resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
-  bucket = aws_s3_bucket.bucket_{{ loop.index }}.bucket
+  bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
@@ -31,12 +31,12 @@ resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
  
   depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ loop.index }}, aws_s3_bucket_public_access_block.public_access_block_{{ loop.index }}]
 
-  bucket = aws_s3_bucket.bucket_{{ loop.index}}.bucket
+  bucket = aws_s3_bucket.bucket_{{ loop.index}}.id
   acl    = "{{bucket.acl}}"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index }}" {
-  bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.bucket
+  bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.id
   block_public_acls       = {{bucket.block_public_acls | lower}}
   block_public_policy     = {{bucket.block_public_policy | lower }}
   ignore_public_acls      = {{bucket.ignore_public_acls | lower}}

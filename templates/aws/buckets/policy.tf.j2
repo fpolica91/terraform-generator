@@ -4,9 +4,7 @@
   {%- if bucket.policy_json is defined-%}
   resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
     bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-    policy = jsonencode(
-      {{bucket.policy_json | tojson}}
-    )
+    policy = jsonencode({{bucket.policy_json | tojson}})
     depends_on = [
       aws_s3_bucket.bucket_{{ loop.index }}
     ]
