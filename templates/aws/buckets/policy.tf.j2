@@ -1,20 +1,23 @@
 {%for bucket in buckets%}
-  {%if bucket.policy_enabled == true %}
+  {%- if bucket.policy_enabled == true -%}
 
-  {%if bucket.policy_json%}
-  resource "aws_s3_bucket_policy" "{{bucket.name}}-policy" {
-    bucket = "aws_s3_bucket.bucket_{{ loop.index }}.bucket"
+  {%- if bucket.policy_json is defined-%}
+  resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
+    bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
     policy = jsonencode(
       {{bucket.policy_json | tojson}}
     )
-   
-    
-      
+    depends_on = [
+      aws_s3_bucket.bucket_{{ loop.index }}
+    ]
   }
 
-  {%else%}
-  resource "aws_s3_bucket_policy" "{{bucket.name}}-policy" {
-    bucket = "aws_s3_bucket.bucket_{{ loop.index }}.bucket
+  {% else %}
+  resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
+    depends_on = [
+      aws_s3_bucket.bucket_{{ loop.index }}
+    ]
+    bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
     policy = jsonencode({
       "Version": "2012-10-17",
       "Statement": [
@@ -23,24 +26,22 @@
           "Effect": "Allow",
           "Principal": "*",
           {% if bucket.actions | length %}
-            "Action": [
-            join("," "{{bucket.actions}}")
-            ],
+            "Action": {{bucket.actions | tojson}},
           {% endif %}
           
-          {% if bucket.resources | length %}
-          "Resource": [
-              join("," "{{bucket.resources}}")
-          ]
+          {% if bucket.resources is defined %}
+            "Resource": {{bucket.resources | tojson}}
           {%else%}
+          
           "Resource": [
-               "arn:aws:s3:::aws_s3_bucket.bucket_{{ loop.index }}.arn/*"
+            "${aws_s3_bucket.bucket_{{ loop.index }}.arn}/*"
+               {# aws_s3_bucket.bucket_{{ loop.index }}.arn/ + "*" #}
             ]
            {% endif %}
         }
       ]
     })
   }
-  {%endif%}
-  {%endif%}
+  {%- endif -%}
+  {%- endif -%}
 {%endfor%}

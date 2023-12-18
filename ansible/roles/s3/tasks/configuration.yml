@@ -1,0 +1,11 @@
+---
+- name: "S3 Configuration"
+  ansible.builtin.template:
+    src: "{{template_dir}}/aws/buckets/configuration.tf.j2"
+    dest: "/tmp/configuration.tf"
+  register: output
+
+- name: "S3 Configuration"
+  ansible.builtin.copy:
+    content: "{{lookup('file', '/tmp/configuration.tf')}}"
+    dest: "{{terraform_dir}}/configuration.tf"

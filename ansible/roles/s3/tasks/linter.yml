@@ -1,0 +1,12 @@
+---
+- name: Find all Terraform files
+  ansible.builtin.find:
+    paths: "{{ terraform_dir }}"
+    patterns: "*.tf"
+    recurse: yes
+  register: terraform_files
+
+- name: Run terraform fmt
+  ansible.builtin.shell:
+    cmd: terraform fmt "{{item.path}}"
+  loop: "{{ terraform_files.files }}"

@@ -9,3 +9,10 @@
 
 - name: Include policy tasks
   include_tasks: policy.yml
+
+- name: Include Configuration Tasks
+  include_tasks: configuration.yml
+
+# last step
+- name: Include Linting Tasks
+  include_tasks: linter.yml

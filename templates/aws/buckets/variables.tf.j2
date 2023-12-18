@@ -1,4 +1,4 @@
-{%if buckets | length > 0%}
+{%- if buckets | length > 0 -%}
 
 variable "buckets" {
   description = "List of buckets to create"
@@ -42,6 +42,6 @@ variable "buckets" {
   ]
 }
 
-{%endif%}
+{%- endif -%}
 
 
