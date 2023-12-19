@@ -2,6 +2,7 @@
   {%- if bucket.policy_enabled == true -%}
 
   {%- if bucket.policy_json is defined-%}
+
   resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
     bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
     policy = jsonencode({{bucket.policy_json | tojson}})
@@ -33,7 +34,6 @@
           
           "Resource": [
             "${aws_s3_bucket.bucket_{{ loop.index }}.arn}/*"
-               {# aws_s3_bucket.bucket_{{ loop.index }}.arn/ + "*" #}
             ]
            {% endif %}
         }

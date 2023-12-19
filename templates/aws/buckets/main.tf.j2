@@ -28,7 +28,6 @@ resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}
 }
 
 resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
- 
   depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ loop.index }}, aws_s3_bucket_public_access_block.public_access_block_{{ loop.index }}]
 
   bucket = aws_s3_bucket.bucket_{{ loop.index}}.id

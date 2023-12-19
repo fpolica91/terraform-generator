@@ -3,6 +3,10 @@
     value = "${aws_s3_bucket.bucket_{{ loop.index }}.id}"
     description = "The ID of the bucket."
   }
+output "bucket_{{ loop.index }}_bucket" {
+    value = "${aws_s3_bucket.bucket_{{ loop.index }}}"
+    description = "Entire bucket object."
+  }
 
   output "bucket_{{ loop.index }}_arn" {
     value = "${aws_s3_bucket.bucket_{{ loop.index }}.arn}"
@@ -14,11 +18,6 @@
     description = "The bucket domain name."
   }
 
-  {%if bucket.host_website == true%}
-  output "bucket_{{ loop.index }}_website_endpoint" {
-    value = "${aws_s3_bucket.bucket_{{ loop.index }}.website_endpoint}"
-    description = "The website endpoint, if the bucket is configured with a website."
-  }
-  {%endif%}
+
 
 {%endfor%}
