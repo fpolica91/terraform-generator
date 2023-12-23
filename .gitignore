@@ -1,5 +1,6 @@
 .env
 terraform/*.tfstate
 terraform/*tf
+terraform/*.tfvars
 terraform/.terraform
 main.sh

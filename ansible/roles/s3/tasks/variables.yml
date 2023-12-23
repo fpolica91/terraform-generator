@@ -6,8 +6,9 @@
   register: variables_config
 
 - name: Write Rendered Configuration to File
-  ansible.builtin.copy:
-    content: "{{ variables_config.terraform_config}}"
-    dest: "{{ terraform_dir }}/variables.tf"
+  ansible.builtin.blockinfile:
+    block: "{{ variables_config.terraform_config}}"
+    path: "{{ terraform_dir }}/variables.tf"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - DO NOT EDIT THIS SECTION "
   tags:
     - terraform

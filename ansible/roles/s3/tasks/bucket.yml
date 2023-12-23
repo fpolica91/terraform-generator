@@ -6,6 +6,7 @@
   register: template
 
 - name: Create S3 Buckets
-  ansible.builtin.copy:
-    content: "{{ lookup('file', '/tmp/main.tf') }}"
-    dest: "{{terraform_dir}}/main.tf"
+  ansible.builtin.blockinfile:
+    path: "{{ terraform_dir }}/main.tf"
+    block: "{{ lookup('file', '/tmp/main.tf') }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}"

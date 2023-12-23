@@ -9,9 +9,18 @@
     - terraform
   register: terraform_dir
 
-# terraform_dir: "{{ playbook_dir }}/../../terraform/"
 - name: Set Global Fact for Terraform Directory
   set_fact:
     terraform_dir: "{{ terraform_dir.path }}"
+  tags:
+    - terraform
+
+- name: Ensure files are present with a shell script
+  ansible.builtin.shell: |
+    for file in variables.tf main.tf ownership.tf configurations.tf policy.tf outputs.tf provider.tf versions.tf backend.tf terraform.tfvars variables.tfvars main.tfvars outputs.tfvars provider.tfvars backend.tfvars; do
+      if [ ! -f "{{ terraform_dir }}/${file}" ]; then
+        touch "{{ terraform_dir }}/${file}"
+      fi
+    done
   tags:
     - terraform

@@ -1,20 +1,15 @@
 # playbook.yml
 ---
 - hosts: localhost
-  vars:
-    VULTR_ACCESS_KEY: "{{VULTR_ACCESS_KEY}}"
-    VULTR_SECRET_KEY: "{{VULTR_SECRET_KEY}}"
-    USER_SPECIFIC_BUCKET_NAME: "tito"
-    ENDPOINT: "ewr1.vultrobjects.com"
-    access_key: "{{access_key}}"
-    secret_key: "{{secret_key}}"
-    generate_s3: true
-    # dynamic_roles: "{{dynamic_roles}}"
-
   tasks:
     - name: Set environment variables as facts
       ansible.builtin.set_fact:
-        buckets: "{{buckets|default([])}}"
+        USER_SPECIFIC_BUCKET_NAME: "tito"
+        ENDPOINT: "ewr1.vultrobjects.com"
+        VULTR_SECRET_KEY: "{{VULTR_SECRET_KEY}}"
+        VULTR_ACCESS_KEY: "{{VULTR_ACCESS_KEY}}"
+        access_key: "{{access_key}}"
+        secret_key: "{{secret_key}}"
         vpcs: "{{vpcs|default([])}}"
         template_dir: "{{ playbook_dir }}/../../templates"
 

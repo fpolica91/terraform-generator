@@ -1,0 +1,2 @@
+- name: Include Create VPC
+  include_tasks: vpc.yml

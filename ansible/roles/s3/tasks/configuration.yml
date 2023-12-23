@@ -2,10 +2,11 @@
 - name: "S3 Configuration"
   ansible.builtin.template:
     src: "{{template_dir}}/aws/buckets/configuration.tf.j2"
-    dest: "/tmp/configuration.tf"
+    dest: "/tmp/configurations.tf"
   register: output
 
 - name: "S3 Configuration"
-  ansible.builtin.copy:
-    content: "{{lookup('file', '/tmp/configuration.tf')}}"
-    dest: "{{terraform_dir}}/configuration.tf"
+  ansible.builtin.blockinfile:
+    path: "{{terraform_dir}}/configurations.tf"
+    block: "{{lookup('file', '/tmp/configurations.tf')}}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - S3 Configuration"

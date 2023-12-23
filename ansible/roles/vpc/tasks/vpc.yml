@@ -1,0 +1,16 @@
+---
+- name: Create Temp VPC File
+  ansible.builtin.template:
+    src: "{{template_dir}}/aws/vpc/main.tf.j2"
+    dest: "/tmp/main.tf"
+  register: vpc_template
+
+- name: Append to Main TF
+  ansible.builtin.blockinfile:
+    path: "{{terraform_dir}}/main.tf"
+    block: "{{ lookup('file', '/tmp/main.tf')}}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}"
+# - name: Create VPC
+#   ansible.builtin.copy:
+#     content: "{{ lookup('file', '/tmp/main.tf') }}"
+#     dest: "{{terraform_dir}}/main.tf"

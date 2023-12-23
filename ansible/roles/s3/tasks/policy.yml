@@ -6,6 +6,7 @@
   register: output
 
 - name: "Write Policy"
-  ansible.builtin.copy:
-    content: "{{lookup('file', '/tmp/policy.tf')}}"
-    dest: "{{terraform_dir}}/policy.tf"
+  ansible.builtin.blockinfile:
+    block: "{{lookup('file', '/tmp/policy.tf')}}"
+    path: "{{terraform_dir}}/policy.tf"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{item}}"

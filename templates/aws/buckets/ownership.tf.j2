@@ -1,25 +1,6 @@
 {%for bucket in buckets%}
 
-resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
-  bucket = "{{bucket.name}}"
-  {% if bucket.tags | length > 0 %}
-  tags   = merge({},
-    {% for tag in bucket.tags %}
-      {
-        {{tag.key}} = "{{tag.value}}"
-      }
-      {% if not loop.last %},{% endif %}
-    {%endfor %}
-    )
-   {% endif %}
-    {%- if bucket.object_lock_enabled is defined -%}
-      object_lock_enabled = {{bucket.object_lock_enabled | lower}}
-    {%- endif -%}
-}
-{%endfor%}
-  
-  
-{# resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
+resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
   bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
   rule {
     object_ownership = "BucketOwnerPreferred"
@@ -39,8 +20,5 @@ resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index 
   block_public_policy     = {{bucket.block_public_policy | lower }}
   ignore_public_acls      = {{bucket.ignore_public_acls | lower}}
   restrict_public_buckets = {{bucket.restrict_public_buckets | lower}}
-} #}
-
-
-
-
+}
+{%endfor%}
