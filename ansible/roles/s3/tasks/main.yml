@@ -15,7 +15,3 @@
 
 - name: Include bucket tasks
   include_tasks: output.yml
-
-# last step
-- name: Include Linting Tasks
-  include_tasks: linter.yml
