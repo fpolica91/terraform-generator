@@ -1,17 +1,5 @@
 {%for bucket in buckets%}
-  {%- if bucket.policy_enabled == true -%}
-
-  {%- if bucket.policy_json is defined-%}
-
-  resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
-    bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-    policy = jsonencode({{bucket.policy_json | tojson}})
-    depends_on = [
-      aws_s3_bucket.bucket_{{ loop.index }}
-    ]
-  }
-
-  {% else %}
+  {%- if bucket.policy.policy_enabled == true -%}
   resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
     depends_on = [
       aws_s3_bucket.bucket_{{ loop.index }}
@@ -24,14 +12,13 @@
           "Sid": "PublicReadGetObject",
           "Effect": "Allow",
           "Principal": "*",
-          {% if bucket.actions | length %}
-            "Action": {{bucket.actions | tojson}},
+          {% if bucket.policy.actions | length %}
+            "Action": {{bucket.policy.actions | tojson}},
           {% endif %}
           
           {% if bucket.resources is defined %}
-            "Resource": {{bucket.resources | tojson}}
+            "Resource": {{bucket.policy.resources | tojson}}
           {%else%}
-          
           "Resource": [
             "${aws_s3_bucket.bucket_{{ loop.index }}.arn}/*"
             ]
@@ -40,6 +27,5 @@
       ]
     })
   }
-  {%- endif -%}
   {%- endif -%}
 {%endfor%}

@@ -4,14 +4,10 @@
 - name: Include bucket tasks
   include_tasks: bucket.yml
 
-- name: Include Configuration Tasks
-  include_tasks: ownership.yml
-
 - name: Include policy tasks
   include_tasks: policy.yml
 
 - name: Include Configuration Tasks
   include_tasks: configuration.yml
-
-- name: Include bucket tasks
-  include_tasks: output.yml
+# - name: Include bucket tasks
+#   include_tasks: output.yml

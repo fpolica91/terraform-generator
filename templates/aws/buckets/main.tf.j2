@@ -1,46 +1,50 @@
 {%for bucket in buckets%}
 
 resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
-  bucket = "{{bucket.name}}"
-  {% if bucket.tags | length > 0 %}
-  tags   = merge({},
-    {% for tag in bucket.tags %}
-      {
-        {{tag.key}} = "{{tag.value}}"
-      }
-      {% if not loop.last %},{% endif %}
-    {%endfor %}
-    )
-   {% endif %}
-    {%- if bucket.object_lock_enabled is defined -%}
-      object_lock_enabled = {{bucket.object_lock_enabled | lower}}
-    {%- endif -%}
+  {% for key, value in bucket.configuration.items() %}
+    {%if value is defined%}
+      {%if key == "tags" %}
+        tags = merge({},
+          {% for tag in value %}
+            {
+            {{tag.key}} = "{{tag.value}}"
+            }
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+        )
+        {%else%}
+        {{ key }} = {{ value | tojson }}
+        {%endif%}
+    {% endif %}
+  {% endfor %}
 }
-{%endfor%}
-  
-  
-{# resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
+
+resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
   bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
+{%if bucket.public_access_block.acl is defined%}
 resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
   depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ loop.index }}, aws_s3_bucket_public_access_block.public_access_block_{{ loop.index }}]
-
   bucket = aws_s3_bucket.bucket_{{ loop.index}}.id
-  acl    = "{{bucket.acl}}"
+  acl    = "{{bucket.public_access_block.acl}}"
 }
+{%endif%}
 
+{%if bucket.public_access_block is defined%}
 resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index }}" {
   bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.id
-  block_public_acls       = {{bucket.block_public_acls | lower}}
-  block_public_policy     = {{bucket.block_public_policy | lower }}
-  ignore_public_acls      = {{bucket.ignore_public_acls | lower}}
-  restrict_public_buckets = {{bucket.restrict_public_buckets | lower}}
-} #}
+  {% for key, value in bucket.public_access_block.items() %}
+    {% if key != "acl"%}
+      {{key}} = {{value | tojson}}
+    {% endif %}
+  {%endfor%}  
+}
+{%endif%}
+{%endfor%}
 
-
-
+  
 

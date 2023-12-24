@@ -1,25 +1,20 @@
-{%for vpc in vpcs%}
-{%if vpc is defined%}
-
-resource "aws_vpc" "{{vpc.name}}" {
-  cidr_block = "{{vpc.cidr_block}}"
-  {%if vpc.enable_dns_hostnames is defined%}
-  enable_dns_hostnames = {{vpc.enable_dns_hostnames | lower}}
-  {%endif%}
-  {%if vpc.enable_dns_support is defined%}
-  enable_dns_support = {{vpc.enable_dns_support | lower}}
-  {%endif%}
-  instance_tenancy = "{{vpc.instance_tenancy}}"
-  {% if vpc.tags is defined%}
-   tags  = merge({},
-    {% for tag in vpc.tags %}
-      {
-        {{tag.key}} = "{{tag.value}}"
-      }
-      {% if not loop.last %},{% endif %}
-    {%endfor %}
-  )
-  {% endif %}
+{% for vpc in vpcs %}
+resource "aws_vpc" "vpc_{{loop.index}}" {
+  {% for key, value in vpc.items() %}
+    {% if value is defined %}
+      {% if key == 'tags' %}
+        tags  = merge({},
+          {% for tag in vpc.tags %}
+            {
+              {{ tag.key }} = "{{ tag.value }}"
+            }
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+        )
+      {% else %}
+        {{ key }} = {{ value | tojson }}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
 }
-{%endif%}
-{%endfor%}
+{% endfor %}

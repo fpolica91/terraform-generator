@@ -1,37 +1,30 @@
 
 {%- for bucket in buckets -%}
-{%if bucket.payment_config is defined %}
-  resource "aws_s3_bucket_request_payment_configuration" "bucket_{{ loop.index }}_payment_config" {
-    bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-    payer  = "{{bucket.payment_config.payer}}"
-  }
-{%endif%}
-
-{%if bucket.host_website == true %}
+{%if bucket.website_configuration.host_website == true %}
 resource "aws_s3_bucket_website_configuration" "website_config_{{ loop.index }}" {
   bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-  index_document {
-    {%if bucket.index_document %}
-      suffix = "{{bucket.index_document}}"
-      {%else%}
-      suffix = "index.html"
+  {%for key, value in bucket.website_configuration.items()%}
+   {%if key == "index_document"%}
+      {{key}}  {
+        suffix = "{{value}}"
+      }
+   {%endif%}
+   {%if key == "error_document"%}
+      {{key}}  {
+        key = "{{value}}"
+      }
     {%endif%}
-  }
-  error_document {
-      {%if bucket.error_document %}
-        key = "{{bucket.error_document}}"
-      {%else%}
-        key = "error.html"
-      {%endif%}
-  }
-  {%if bucket.routing_rules_list is defined and bucket.routing_rules_list%}
+
+  {%endfor%}
+
+  {%if bucket.website_configuration.routing_rules_list is defined%}
   routing_rules = <<EOF
-     {{bucket.routing_rules_list | tojson}}
+     {{bucket.website_configuration.routing_rules_list | tojson}}
   EOF
   {%endif%}
 
-  {%if bucket.routing_rule is defined%}
-    {%for rule in bucket.routing_rule%}
+  {%if bucket.website_configuration.routing_rule is defined%}
+    {%for rule in bucket.website_configuration.routing_rule%}
       routing_rule {
         {%if rule.condition%}
           condition {
@@ -70,9 +63,24 @@ resource "aws_s3_bucket_website_configuration" "website_config_{{ loop.index }}"
 
 
 {%if bucket.cors_configuration is defined%}
-resource "aws_s3_bucket_cors_rule" "bucket_{{ loop.index }}_cors" {
+resource "aws_s3_bucket_cors_configuration" "bucket_{{ loop.index }}_cors" {
   bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-  {%if bucket.cors_configuration.allowed_headers is defined%}
+  {%for rule in bucket.cors_configuration.cors_rules_list%}
+  cors_rule {
+    {%for key, value in rule.items()%}
+        {{key}} = {{value | tojson}}
+    {%endfor%}
+  }
+  {%endfor%}
+}
+{%endif%}
+
+
+{%-endfor -%}
+
+
+
+  {# {%if bucket.cors_configuration.allowed_headers is defined%}
   allowed_headers = [
     {%for header in bucket.cors_configuration.allowed_headers%}
       "{{header}}",
@@ -102,9 +110,4 @@ resource "aws_s3_bucket_cors_rule" "bucket_{{ loop.index }}_cors" {
   {%endif%}
   {%if bucket.cors_configuration.max_age_seconds%}
     max_age_seconds = {{bucket.cors_configuration.max_age_seconds}}
-  {%endif%}
-}
-{%endif%}
-
-
-{%-endfor -%}
+  {%endif%} #}

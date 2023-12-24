@@ -17,7 +17,7 @@
 
 - name: Ensure files are present with a shell script
   ansible.builtin.shell: |
-    for file in variables.tf main.tf ownership.tf configurations.tf policy.tf outputs.tf provider.tf versions.tf backend.tf terraform.tfvars variables.tfvars main.tfvars outputs.tfvars provider.tfvars backend.tfvars; do
+    for file in variables.tf main.tf configurations.tf policy.tf outputs.tf provider.tf versions.tf backend.tf terraform.tfvars variables.tfvars main.tfvars outputs.tfvars provider.tfvars backend.tfvars; do
       if [ ! -f "{{ terraform_dir }}/${file}" ]; then
         touch "{{ terraform_dir }}/${file}"
       fi

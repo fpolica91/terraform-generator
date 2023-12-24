@@ -21,11 +21,7 @@ terraform {
 }
 
 provider "aws" {
-  access_key = "{{access_key}}"
-  secret_key = "{{secret_key}}"
-  {% if region is defined and region %}
-    region = "{{region}}"
-  {%else%}
-    region = "us-east-1"
-  {% endif %}
+  access_key = var.access_key
+  secret_key = var.secret_key
+  region = var.region
 }
