@@ -1,95 +1,91 @@
 {# static vars #}
-
 variable "region" {
-  description = "AWS region"
-  type = string
-  default = "us-east-1"
+description = "AWS region"
+type = string
+default = "us-east-1"
 }
-
 variable access_key {
-  description = "AWS access key"
-  type = string
+description = "AWS access key"
+type = string
 }
-
 variable secret_key {
-  description = "AWS secret key"
-  type = string
+description = "AWS secret key"
+type = string
 }
-
-
 {# end of static vars #}
-
 {%- if buckets | length > 0 -%}
-variable "buckets" {
-  description = "List of buckets to create"
-  type = list(object({
+    variable "buckets" {
+    description = "List of buckets to create"
+    type = list(object({
     configuration = object({
-      name = string
-      acl = string
-      tags = list(object({
-        key = string
-        value = string
-      }))
+    name = string
+    acl = string
+    tags = list(object({
+    key = string
+    value = string
+    }))
     })
     public_access_block = object({
-      block_public_acls = bool
-      block_public_policy = bool
-      ignore_public_acls = bool
-      restrict_public_buckets = bool
+    block_public_acls = bool
+    block_public_policy = bool
+    ignore_public_acls = bool
+    restrict_public_buckets = bool
     })
     acceleration = object({
-      acceleration_status = string
+    acceleration_status = string
     })
     policy = object({
-      policy_enabled = bool
-      actions = list(string)
+    policy_enabled = bool
+    actions = list(string)
     })
     website_configuration = object({
-      host_website = bool
-      index_document = string
-      error_document = string
+    host_website = bool
+    index_document = string
+    error_document = string
     })
-  }))
-  default = [
+    }))
+    default = [
     {% for bucket in buckets %}
-    {
-      configuration = {
-        name = "{{bucket.configuration.bucket}}"
+        {
+        configuration = {
+        name = "{{ bucket.configuration.bucket }}"
         tags = [
-          {% for tag in bucket.configuration.tags %}
-          {
+        {% for tag in bucket.configuration.tags %}
+            {
             key = "{{ tag.key }}"
             value = "{{ tag.value }}"
-          }{% if not loop.last %},{% endif %}
-          {% endfor %}
+            }
+            {% if not loop.last %},{% endif %}
+        {% endfor %}
         ]
-      },
-      public_access_block = {
-        acl = "{{bucket.public_access_block.acl}}"
-        block_public_acls = {{bucket.public_access_block.block_public_acls | lower}}
-        block_public_policy = {{bucket.public_access_block.block_public_policy | lower}}
-        ignore_public_acls = {{bucket.public_access_block.ignore_public_acls | lower}}
-        restrict_public_buckets = {{bucket.public_access_block.restrict_public_buckets | lower}}
-      },
-      acceleration = {
-        acceleration_status = "{{bucket.acceleration.acceleration_status}}"
-      },
-      policy = {
-        policy_enabled = {{bucket.policy.policy_enabled | tojson}}
+        },
+        public_access_block = {
+        acl = "{{ bucket.public_access_block.acl }}"
+        block_public_acls = {{ bucket.public_access_block.block_public_acls | lower }}
+        block_public_policy = {{ bucket.public_access_block.block_public_policy | lower }}
+        ignore_public_acls = {{ bucket.public_access_block.ignore_public_acls | lower }}
+        restrict_public_buckets = {{ bucket.public_access_block.restrict_public_buckets | lower }}
+        },
+        acceleration = {
+        acceleration_status = "{{ bucket.acceleration.acceleration_status }}"
+        },
+        policy = {
+        policy_enabled = {{ bucket.policy.policy_enabled | tojson }}
         actions = [
-          {% for action in bucket.policy.actions %}
-          "{{action}}"{% if not loop.last %},{% endif %}
-          {% endfor %}
+        {% for action in bucket.policy.actions %}
+            "{{ action }}"
+            {% if not loop.last %},{% endif %}
+        {% endfor %}
         ]
-      },
-      website_configuration = {
-        host_website = {{bucket.website_configuration.host_website | lower}}
-        index_document = "{{bucket.website_configuration.index_document}}"
-        error_document = "{{bucket.website_configuration.error_document}}"
-      }
-    }{% if not loop.last %},{% endif %}
+        },
+        website_configuration = {
+        host_website = {{ bucket.website_configuration.host_website | lower }}
+        index_document = "{{ bucket.website_configuration.index_document }}"
+        error_document = "{{ bucket.website_configuration.error_document }}"
+        }
+        }
+        {% if not loop.last %},{% endif %}
     {% endfor %}
-  ]
-}
-
+    ]
+    }
 {%- endif -%}

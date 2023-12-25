@@ -1,31 +1,28 @@
-{%for bucket in buckets%}
-  {%- if bucket.policy.policy_enabled == true -%}
-  resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
-    depends_on = [
-      aws_s3_bucket.bucket_{{ loop.index }}
-    ]
-    bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-    policy = jsonencode({
-      "Version": "2012-10-17",
-      "Statement": [
+{% for bucket in buckets %}
+    {%- if bucket.policy.policy_enabled == true -%}
+        resource "aws_s3_bucket_policy" "bucket_{{ loop.index }}_policy" {
+        depends_on = [
+        aws_s3_bucket.bucket_{{ loop.index }}
+        ]
+        bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
+        policy = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
         {
-          "Sid": "PublicReadGetObject",
-          "Effect": "Allow",
-          "Principal": "*",
-          {% if bucket.policy.actions | length %}
-            "Action": {{bucket.policy.actions | tojson}},
-          {% endif %}
-          
-          {% if bucket.resources is defined %}
-            "Resource": {{bucket.policy.resources | tojson}}
-          {%else%}
-          "Resource": [
+        "Sid": "PublicReadGetObject",
+        "Effect": "Allow",
+        "Principal": "*",
+        {% if bucket.policy.actions | length %}"Action": {{ bucket.policy.actions | tojson }},{% endif %}
+        {% if bucket.resources is defined %}
+            "Resource": {{ bucket.policy.resources | tojson }}
+        {% else %}
+            "Resource": [
             "${aws_s3_bucket.bucket_{{ loop.index }}.arn}/*"
             ]
-           {% endif %}
+        {% endif %}
         }
-      ]
-    })
-  }
-  {%- endif -%}
-{%endfor%}
+        ]
+        })
+        }
+    {%- endif -%}
+{% endfor %}

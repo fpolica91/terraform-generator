@@ -1,50 +1,43 @@
-{%for bucket in buckets%}
-
-resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
-  {% for key, value in bucket.configuration.items() %}
-    {%if value is defined%}
-      {%if key == "tags" %}
-        tags = merge({},
-          {% for tag in value %}
-            {
-            {{tag.key}} = "{{tag.value}}"
-            }
-            {% if not loop.last %},{% endif %}
-          {% endfor %}
-        )
-        {%else%}
-        {{ key }} = {{ value | tojson }}
-        {%endif%}
-    {% endif %}
-  {% endfor %}
-}
-
-resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
-  bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-  rule {
+{% for bucket in buckets %}
+    resource "aws_s3_bucket" "bucket_{{ loop.index }}" {
+    {% for key, value in bucket.configuration.items() %}
+        {% if value is defined %}
+            {% if key == "tags" %}
+                tags = merge({},
+                {% for tag in value %}
+                    {
+                    {{ tag.key }} = "{{ tag.value }}"
+                    }
+                    {% if not loop.last %},{% endif %}
+                {% endfor %}
+                )
+            {% else %}
+                {{ key }} = {{ value | tojson }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    }
+    resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ loop.index }}" {
+    bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
+    rule {
     object_ownership = "BucketOwnerPreferred"
-  }
-}
-
-{%if bucket.public_access_block.acl is defined%}
-resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
-  depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ loop.index }}, aws_s3_bucket_public_access_block.public_access_block_{{ loop.index }}]
-  bucket = aws_s3_bucket.bucket_{{ loop.index}}.id
-  acl    = "{{bucket.public_access_block.acl}}"
-}
-{%endif%}
-
-{%if bucket.public_access_block is defined%}
-resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index }}" {
-  bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.id
-  {% for key, value in bucket.public_access_block.items() %}
-    {% if key != "acl"%}
-      {{key}} = {{value | tojson}}
+    }
+    }
+    {% if bucket.public_access_block.acl is defined %}
+        resource "aws_s3_bucket_acl" "acl_bucket_{{ loop.index }}" {
+            depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ loop.index }}, aws_s3_bucket_public_access_block.public_access_block_{{ loop.index }}]
+            bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
+            acl    = "{{ bucket.public_access_block.acl }}"
+        }
     {% endif %}
-  {%endfor%}  
-}
-{%endif%}
-{%endfor%}
-
-  
-
+    {% if bucket.public_access_block is defined %}
+        resource "aws_s3_bucket_public_access_block" "public_access_block_{{ loop.index }}" {
+        bucket                  = aws_s3_bucket.bucket_{{ loop.index }}.id
+        {% for key, value in bucket.public_access_block.items() %}
+            {% if key != "acl" %}
+                 {{ key }} = {{ value | tojson }}
+            {% endif %}
+        {% endfor %}
+        }
+    {% endif %}
+{% endfor %}

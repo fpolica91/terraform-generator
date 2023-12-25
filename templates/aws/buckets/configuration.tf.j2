@@ -1,113 +1,59 @@
-
 {%- for bucket in buckets -%}
-{%if bucket.website_configuration.host_website == true %}
-resource "aws_s3_bucket_website_configuration" "website_config_{{ loop.index }}" {
-  bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-  {%for key, value in bucket.website_configuration.items()%}
-   {%if key == "index_document"%}
-      {{key}}  {
-        suffix = "{{value}}"
-      }
-   {%endif%}
-   {%if key == "error_document"%}
-      {{key}}  {
-        key = "{{value}}"
-      }
-    {%endif%}
-
-  {%endfor%}
-
-  {%if bucket.website_configuration.routing_rules_list is defined%}
-  routing_rules = <<EOF
-     {{bucket.website_configuration.routing_rules_list | tojson}}
-  EOF
-  {%endif%}
-
-  {%if bucket.website_configuration.routing_rule is defined%}
-    {%for rule in bucket.website_configuration.routing_rule%}
-      routing_rule {
-        {%if rule.condition%}
-          condition {
-            {%if rule.condition.http_error_code_returned_equals%}
-              http_error_code_returned_equals = {{rule.condition.http_error_code_returned_equals}}
-            {%endif%}
-            {%if rule.condition.key_prefix_equals%}
-              key_prefix_equals = {{rule.condition.key_prefix_equals}}
-            {%endif%}
-          }
-        {%endif%}
-        {%if rule.redirect%}
-          redirect {
-            {%if rule.redirect.host_name%}
-              host_name = {{rule.redirect.host_name}}
-            {%endif%}
-            {%if rule.redirect.http_redirect_code%}
-              http_redirect_code = {{rule.redirect.http_redirect_code}}
-            {%endif%}
-            {%if rule.redirect.protocol%}
-              protocol = {{rule.redirect.protocol}}
-            {%endif%}
-            {%if rule.redirect.replace_key_prefix_with%}
-              replace_key_prefix_with = {{rule.redirect.replace_key_prefix_with}}
-            {%endif%}
-            {%if rule.redirect.replace_key_with%}
-              replace_key_with = {{rule.redirect.replace_key_with}}
-            {%endif%}
-          }
-        {%endif%}
-      }
-    {%endfor%}
-  {%endif%}
-}
-{%endif%}
-
-
-{%if bucket.cors_configuration is defined%}
-resource "aws_s3_bucket_cors_configuration" "bucket_{{ loop.index }}_cors" {
-  bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
-  {%for rule in bucket.cors_configuration.cors_rules_list%}
-  cors_rule {
-    {%for key, value in rule.items()%}
-        {{key}} = {{value | tojson}}
-    {%endfor%}
-  }
-  {%endfor%}
-}
-{%endif%}
-
-
-{%-endfor -%}
-
-
-
-  {# {%if bucket.cors_configuration.allowed_headers is defined%}
-  allowed_headers = [
-    {%for header in bucket.cors_configuration.allowed_headers%}
-      "{{header}}",
-    {%endfor%}
-  ]
-  {%endif%}
-  {%if bucket.cors_configuration.allowed_methods is defined%}
-  allowed_methods = [
-    {%for method in bucket.cors_configuration.allowed_methods%}
-      "{{method}}",
-    {%endfor%}
-  ]
-  {%endif%}
-  {%if bucket.cors_configuration.allowed_origins is defined%}
-  allowed_origins = [
-    {%for origin in bucket.cors_configuration.allowed_origins%}
-      "{{origin}}",
-    {%endfor%}
-  ]
-  {%endif%}
-  {%if bucket.cors_configuration.expose_headers is defined%}
-  expose_headers = [
-    {%for header in bucket.cors_configuration.expose_headers%}
-      "{{header}}",
-    {%endfor%}
-  ]
-  {%endif%}
-  {%if bucket.cors_configuration.max_age_seconds%}
-    max_age_seconds = {{bucket.cors_configuration.max_age_seconds}}
-  {%endif%} #}
+    {% if bucket.website_configuration.host_website == true %}
+        resource "aws_s3_bucket_website_configuration" "website_config_{{ loop.index }}" {
+        bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
+        {% for key, value in bucket.website_configuration.items() %}
+            {% if key == "index_document" %}
+                {{ key }}  {
+                suffix = "{{ value }}"
+                }
+            {% endif %}
+            {% if key == "error_document" %}
+                {{ key }}  {
+                key = "{{ value }}"
+                }
+            {% endif %}
+        {% endfor %}
+        {% if bucket.website_configuration.routing_rules_list is defined %}
+            routing_rules = <<EOF
+            {{ bucket.website_configuration.routing_rules_list | tojson }}
+            EOF
+        {% endif %}
+        {% if bucket.website_configuration.routing_rule is defined %}
+            {% for rule in bucket.website_configuration.routing_rule %}
+                routing_rule {
+                {% if rule.condition %}
+                    condition {
+                    {% if rule.condition.http_error_code_returned_equals %}
+                        http_error_code_returned_equals = {{ rule.condition.http_error_code_returned_equals }}
+                    {% endif %}
+                    {% if rule.condition.key_prefix_equals %}key_prefix_equals = {{ rule.condition.key_prefix_equals }}{% endif %}
+                    }
+                {% endif %}
+                {% if rule.redirect %}
+                    redirect {
+                    {% if rule.redirect.host_name %}host_name = {{ rule.redirect.host_name }}{% endif %}
+                    {% if rule.redirect.http_redirect_code %}http_redirect_code = {{ rule.redirect.http_redirect_code }}{% endif %}
+                    {% if rule.redirect.protocol %}protocol = {{ rule.redirect.protocol }}{% endif %}
+                    {% if rule.redirect.replace_key_prefix_with %}
+                        replace_key_prefix_with = {{ rule.redirect.replace_key_prefix_with }}
+                    {% endif %}
+                    {% if rule.redirect.replace_key_with %}replace_key_with = {{ rule.redirect.replace_key_with }}{% endif %}
+                    }
+                {% endif %}
+                }
+            {% endfor %}
+        {% endif %}
+        }
+    {% endif %}
+    {% if bucket.cors_configuration is defined %}
+        resource "aws_s3_bucket_cors_configuration" "bucket_{{ loop.index }}_cors" {
+        bucket = aws_s3_bucket.bucket_{{ loop.index }}.id
+        {% for rule in bucket.cors_configuration.cors_rules_list %}
+            cors_rule {
+            {% for key, value in rule.items() %}{{ key }} = {{ value | tojson }}{% endfor %}
+            }
+        {% endfor %}
+        }
+    {% endif %}
+{%- endfor -%}
